@@ -14,7 +14,9 @@ func handlerInit(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlerSaveData(w http.ResponseWriter, r *http.Request) {
-	url, email := r.FormValue("url"), r.FormValue("email")
+	r.ParseForm()
+	url := r.PostForm.Get("url")
+	email := r.PostForm.Get("email")
 
 	db := dbmanager.OpenDbConnection("sqlite3.db")
 	defer dbmanager.CloseDbConnection(db)
@@ -22,6 +24,8 @@ func handlerSaveData(w http.ResponseWriter, r *http.Request) {
 	dbmanager.AddUrl(db, url, 0)
 	urlID := dbmanager.GetUrlID(db, url)
 	dbmanager.AddSubscription(db, email, urlID)
+
+	http.Redirect(w, r, "/", 302)
 }
 
 func main() {
@@ -62,12 +66,6 @@ func main() {
 // req.Header.Set("referer", "https://www.avito.ru/rossiya")
 // req.Header.Set("connection", "keep-alive")
 // req.Header.Set("accept-language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,lt;q=0.6")
-// // req.Header.Set("server", "server")
-// // req.Header.Set("server", "server")
-// // req.Header.Set("server", "server")
-// // req.Header.Set("server", "server")
-// // req.Header.Set("server", "server")
-// // req.Header.Set("server", "server")
 // res, _ := client.Do(req)
 // for true {
 
