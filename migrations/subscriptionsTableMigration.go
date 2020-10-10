@@ -6,7 +6,7 @@ import (
 )
 
 type SubscriptionsTableMigration struct {
-	Db *sql.DB
+	DB *sql.DB
 }
 
 func (r *SubscriptionsTableMigration) Up() {
@@ -17,7 +17,7 @@ func (r *SubscriptionsTableMigration) Up() {
 		FOREIGN KEY(id_url) REFERENCES urls(id),
 		CONSTRAINT unic_rows UNIQUE(email, id_url));`
 
-	statement, err := r.Db.Prepare(query)
+	statement, err := r.DB.Prepare(query)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -27,7 +27,7 @@ func (r *SubscriptionsTableMigration) Up() {
 
 func (r *SubscriptionsTableMigration) Down() {
 	query := `DROP TABLE subscriptions;`
-	statement, err := r.Db.Prepare(query)
+	statement, err := r.DB.Prepare(query)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

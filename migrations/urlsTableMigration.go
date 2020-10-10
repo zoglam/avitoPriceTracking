@@ -6,7 +6,7 @@ import (
 )
 
 type UrlsTableMigration struct {
-	Db *sql.DB
+	DB *sql.DB
 }
 
 func (r *UrlsTableMigration) Up() {
@@ -15,7 +15,7 @@ func (r *UrlsTableMigration) Up() {
 		"url" TEXT UNIQUE,
 		"price" NUMERIC);`
 
-	statement, err := r.Db.Prepare(query)
+	statement, err := r.DB.Prepare(query)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -25,7 +25,7 @@ func (r *UrlsTableMigration) Up() {
 
 func (r *UrlsTableMigration) Down() {
 	query := `DROP TABLE urls;`
-	statement, err := r.Db.Prepare(query)
+	statement, err := r.DB.Prepare(query)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
