@@ -11,4 +11,7 @@ go run main.go [params]
 ```
 
 ## Run with params
-"--reset" resets db and runs app
+Resets db and runs app
+```bash
+go run main.go --reset
+``` 
