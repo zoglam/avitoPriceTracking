@@ -1,6 +1,6 @@
 FROM golang:latest
 
-LABEL maintainer="Quique <https://github.com/zoglam>"
+LABEL maintainer="<https://github.com/zoglam>"
 
 WORKDIR /app
 
