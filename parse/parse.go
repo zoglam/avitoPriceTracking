@@ -5,7 +5,6 @@ import (
     "io/ioutil"
     "log"
     "net/http"
-    "os"
     "regexp"
     "strconv"
     "time"
@@ -47,9 +46,9 @@ func ParseAvitoPrice(url_name string) (int, error) {
     var patt = regexp.MustCompile(`itemprop="price" content="(\d+)"`)
     match := patt.FindStringSubmatch(string(responseData))
     if len(match) < 2 {
-        file, _ := os.Create("dwa.html")
-        defer file.Close()
-        file.WriteString(string(responseData))
+        // file, _ := os.Create("dwa.html")
+        // defer file.Close()
+        // file.WriteString(string(responseData))
         return 0, errors.New("Price not found")
     }
     price, err := strconv.Atoi(match[1])

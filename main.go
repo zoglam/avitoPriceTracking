@@ -30,7 +30,7 @@ func (u *UrlQueue) urlsChecking() {
             price, _ := strconv.Atoi(item[1])
             newPrice, err := parse.ParseAvitoPrice(url)
             if err != nil {
-                log.Println("Запись будет удалена мб")
+                log.Println(url, err, "- Запись будет удалена мб")
             } else {
                 if newPrice != price {
                     log.Println(url, "| new price:", price, "->", newPrice)
@@ -47,9 +47,9 @@ func (u *UrlQueue) urlsChecking() {
                     }
                 }
             }
-            time.Sleep(2 * time.Second)
+            time.Sleep(7 * time.Second)
         }
-        time.Sleep(5 * time.Second)
+        time.Sleep(30 * time.Second)
     }
 }
 
@@ -103,5 +103,5 @@ func main() {
     r := mux.NewRouter()
     r.HandleFunc("/", handlerInit)
     r.HandleFunc("/save/", handlerSaveData).Methods("POST")
-    log.Fatal(http.ListenAndServe("localhost:8080", r))
+    log.Fatal(http.ListenAndServe("localhost:"+os.Getenv("PORT"), r))
 }
