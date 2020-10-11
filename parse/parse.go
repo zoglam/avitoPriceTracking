@@ -5,17 +5,27 @@ import (
     "io/ioutil"
     "log"
     "net/http"
+    "os"
     "regexp"
     "strconv"
     "time"
 )
 
-func ParseAvitoPrice(url string) (int, error) {
+func ParseAvitoPrice(url_name string) (int, error) {
+    // transport := &http.Transport{
+    //     Proxy: http.ProxyURL(&url.URL{
+    //         Scheme: "http",
+    //         User:   url.UserPassword("user", "password"),
+    //         Host:   "host:port",
+    //     }),
+    // }
+
     client := &http.Client{
-        Timeout: 100 * time.Second,
+        Timeout: 20 * time.Second,
+        // Transport: transport,
     }
 
-    request, err := http.NewRequest("GET", url, nil)
+    request, err := http.NewRequest("GET", url_name, nil)
     if err != nil {
         log.Println(err.Error())
         return 0, err
@@ -37,6 +47,9 @@ func ParseAvitoPrice(url string) (int, error) {
     var patt = regexp.MustCompile(`itemprop="price" content="(\d+)"`)
     match := patt.FindStringSubmatch(string(responseData))
     if len(match) < 2 {
+        file, _ := os.Create("dwa.html")
+        defer file.Close()
+        file.WriteString(string(responseData))
         return 0, errors.New("Price not found")
     }
     price, err := strconv.Atoi(match[1])
