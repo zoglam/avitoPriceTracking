@@ -19,7 +19,7 @@ go run main.go --reset
 ## Docker
 ```bash
 # Build
-sudo docker build -f DockerFile -t pricetracking .
+sudo docker build -t pricetracking .
 
 # Run
 sudo docker run --network="host" pricetracking
