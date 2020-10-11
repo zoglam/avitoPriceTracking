@@ -1,12 +1,13 @@
 # Avito price tracking
 
-## wild imports
+## Wild imports
 ```bash
 go get github.com/mattn/go-sqlite3
 go get github.com/gorilla/mux
 ```
 
 ## Run
+Parse protection skips on ubuntu 18.04.5
 ```bash
 # Default
 go run main.go [params]
@@ -21,5 +22,5 @@ go run main.go --reset
 sudo docker build -f DockerFile -t pricetracking .
 
 # Run
-sudo docker run -p 8080:8080 pricetracking
+sudo docker run --network="host" pricetracking
 ```

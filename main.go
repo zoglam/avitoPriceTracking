@@ -94,6 +94,10 @@ func main() {
     }
 
     portNumber := os.Getenv("PORT")
+    if portNumber == "" {
+        portNumber = "8080"
+    }
+
     u := UrlQueue{
         OutChan: make(chan []string, 10),
     }
