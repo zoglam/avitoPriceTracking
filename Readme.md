@@ -8,11 +8,18 @@ go get github.com/gorilla/mux
 
 ## Run
 ```bash
+# Default
 go run main.go [params]
+
+# Run with params
+go run main.go --reset
 ```
 
-## Run with params
-Resets db and runs app
+## Docker
 ```bash
-go run main.go --reset
-``` 
+# Build
+sudo docker build -f DockerFile -t pricetracking .
+
+# Run
+sudo docker run -p 8080:8080 pricetracking
+```

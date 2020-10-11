@@ -7,9 +7,9 @@ import (
     "strconv"
     "time"
 
-    "./dbmanager"
-    "./mailmanager"
-    "./parse"
+    "avitopricetracking/dbmanager"
+    "avitopricetracking/mailmanager"
+    "avitopricetracking/parse"
     "github.com/gorilla/mux"
     _ "github.com/mattn/go-sqlite3"
 )
@@ -93,15 +93,16 @@ func main() {
         }
     }
 
+    portNumber := os.Getenv("PORT")
     u := UrlQueue{
         OutChan: make(chan []string, 10),
     }
     go u.urlsChecking()
     go u.sendNotifications()
 
-    log.Println("Server started")
+    log.Println("Server started on port:", portNumber)
     r := mux.NewRouter()
     r.HandleFunc("/", handlerInit)
     r.HandleFunc("/save/", handlerSaveData).Methods("POST")
-    log.Fatal(http.ListenAndServe("localhost:"+os.Getenv("PORT"), r))
+    log.Fatal(http.ListenAndServe("localhost:"+portNumber, r))
 }
