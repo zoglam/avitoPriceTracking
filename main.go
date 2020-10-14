@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "log"
     "net/http"
     "os"
@@ -10,6 +11,7 @@ import (
     "avitopricetracking/dbmanager"
     "avitopricetracking/mailmanager"
     "avitopricetracking/parse"
+
     "github.com/gorilla/mux"
     _ "github.com/mattn/go-sqlite3"
 )
@@ -28,35 +30,39 @@ func (u *UrlQueue) urlsChecking() {
         for _, item := range urls {
             url := item[0]
             price, _ := strconv.Atoi(item[1])
-            newPrice, err := parse.ParseAvitoPrice(url)
+            newPrice, err := parse.GetAdsPrice(url)
             if err != nil {
-                log.Println(url, err, "- Запись будет удалена мб")
+                log.Println(url, err)
             } else {
                 if newPrice != price {
-                    log.Println(url, "| new price:", price, "->", newPrice)
-                    urlID := dbmanager.GetUrlID(db, url)
-                    emails := dbmanager.GetEmailsByUrl(db, urlID)
+                    log.Printf("New price for %s is %d -> %d\n", url, price, newPrice)
+                    dbmanager.UpdateUrl(db, url, newPrice)
+                    emails := dbmanager.GetEmailsByUrl(db, url)
                     for _, email := range emails {
-                        dbmanager.UpdateUrl(db, url, newPrice)
-                        u.OutChan <- []string{
-                            url,
-                            strconv.Itoa(price),
-                            strconv.Itoa(newPrice),
-                            email,
+                        status := dbmanager.GetUserStatus(db, email)
+                        if status == 1 {
+                            u.OutChan <- []string{
+                                url,
+                                strconv.Itoa(price),
+                                strconv.Itoa(newPrice),
+                                email,
+                            }
                         }
                     }
                 }
             }
-            time.Sleep(7 * time.Second)
+            time.Sleep(2 * time.Second)
         }
-        time.Sleep(30 * time.Second)
+        time.Sleep(1 * time.Second)
     }
 }
 
 func (u *UrlQueue) sendNotifications() {
+    log.Printf("sendNotifications started")
     for item := range u.OutChan {
         url, price, newPrice, email := item[0], item[1], item[2], item[3]
-        mailmanager.SendMessage(url, price, newPrice, email)
+        body := fmt.Sprintf("New price for %s is %s -> %s", url, price, newPrice)
+        mailmanager.SendMessage(body, email)
     }
 }
 
@@ -72,18 +78,36 @@ func handlerSaveData(w http.ResponseWriter, r *http.Request) {
     db := dbmanager.OpenDbConnection("sqlite3.db")
     defer dbmanager.CloseDbConnection(db)
 
-    price, err := parse.ParseAvitoPrice(url)
+    price, err := parse.GetAdsPrice(url)
     if err != nil {
         log.Println(err)
     } else {
         dbmanager.AddUrl(db, url, price)
-        urlID := dbmanager.GetUrlID(db, url)
-        dbmanager.AddSubscription(db, email, urlID)
-        log.Printf("New value: %s - %s", url, email)
+        s := dbmanager.AddUser(db, email)
+        if s == 1 {
+            hash := dbmanager.GetUserHash(db, email)
+            body := fmt.Sprintf("http://%s:%s/activate_email/?hash=%s", ipAddress, portNumber, hash)
+            mailmanager.SendMessage(body, email)
+        }
+        dbmanager.AddSubscription(db, email, url)
+        log.Printf("New value for %s - %s - %d", url, email, price)
     }
 
     http.Redirect(w, r, "/", 302)
 }
+
+func handlerActivateEmail(w http.ResponseWriter, r *http.Request) {
+    db := dbmanager.OpenDbConnection("sqlite3.db")
+    defer dbmanager.CloseDbConnection(db)
+
+    query := r.URL.Query()
+    hash, _ := query["hash"]
+    dbmanager.UserActivateEmail(db, hash[0])
+    fmt.Fprintln(w, "email activated")
+}
+
+var ipAddress = os.Getenv("IP")
+var portNumber = os.Getenv("PORT")
 
 func main() {
     args := os.Args[1:]
@@ -93,7 +117,9 @@ func main() {
         }
     }
 
-    portNumber := os.Getenv("PORT")
+    if ipAddress == "" {
+        ipAddress = "localhost"
+    }
     if portNumber == "" {
         portNumber = "8080"
     }
@@ -106,7 +132,8 @@ func main() {
 
     log.Println("Server started on port:", portNumber)
     r := mux.NewRouter()
-    r.HandleFunc("/", handlerInit)
+    r.HandleFunc("/", handlerInit).Methods("GET")
     r.HandleFunc("/save/", handlerSaveData).Methods("POST")
-    log.Fatal(http.ListenAndServe("localhost:"+portNumber, r))
+    r.HandleFunc("/activateemail/", handlerActivateEmail).Methods("GET")
+    log.Fatal(http.ListenAndServe(ipAddress+":"+portNumber, r))
 }

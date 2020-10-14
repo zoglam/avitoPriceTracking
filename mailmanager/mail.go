@@ -12,12 +12,12 @@ const (
     smtpPort = "portNumber"
 )
 
-func SendMessage(url string, price string, newPrice string, emailTo string) {
+func SendMessage(body string, emailTo string) {
 
     msg := []byte("From: " + from + "\n" +
         "To: " + emailTo + "\n" +
         "Subject: avitoPriceTracking\n\n" +
-        "New price for " + url + " is " + price + " -> " + newPrice)
+        body)
 
     auth := smtp.PlainAuth("", from, password, smtpHost)
 

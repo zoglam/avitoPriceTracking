@@ -11,9 +11,9 @@ type UrlsTableMigration struct {
 
 func (r *UrlsTableMigration) Up() {
     query := `CREATE TABLE urls (
-        "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-        "url" TEXT UNIQUE,
-        "price" NUMERIC);`
+        "url" TEXT PRIMARY KEY,
+        "price" NUMERIC
+    );`
 
     statement, err := r.DB.Prepare(query)
     if err != nil {

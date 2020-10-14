@@ -12,6 +12,7 @@ RUN go mod download
 
 COPY . .
 
+ENV IP localhost
 ENV PORT 8080
 
 RUN go build

@@ -10,7 +10,9 @@ import (
     "time"
 )
 
-func ParseAvitoPrice(url_name string) (int, error) {
+// GetAdsPrice returns price from ad
+func GetAdsPrice(urlName string) (int, error) {
+
     // transport := &http.Transport{
     //     Proxy: http.ProxyURL(&url.URL{
     //         Scheme: "http",
@@ -24,7 +26,7 @@ func ParseAvitoPrice(url_name string) (int, error) {
         // Transport: transport,
     }
 
-    request, err := http.NewRequest("GET", url_name, nil)
+    request, err := http.NewRequest("GET", urlName, nil)
     if err != nil {
         log.Println(err.Error())
         return 0, err
@@ -51,6 +53,7 @@ func ParseAvitoPrice(url_name string) (int, error) {
         // file.WriteString(string(responseData))
         return 0, errors.New("Price not found")
     }
+
     price, err := strconv.Atoi(match[1])
     if err != nil {
         log.Println(err.Error())

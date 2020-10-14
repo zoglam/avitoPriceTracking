@@ -1,7 +1,9 @@
 package dbmanager
 
 import (
+    "crypto/md5"
     "database/sql"
+    "fmt"
     "log"
     "os"
     "strconv"
@@ -22,24 +24,69 @@ func AddUrl(db *sql.DB, url string, price int) {
     }
 }
 
-func GetUrlID(db *sql.DB, url string) int {
-    query := `SELECT id FROM urls WHERE url = ?`
-    row, err := db.Query(query, url)
+func AddUser(db *sql.DB, email string) int {
+    query := `INSERT INTO users(email, hash, status) VALUES (?, ?, 0)`
+    hash := fmt.Sprintf("%x", md5.Sum([]byte(email)))
+    statement, err := db.Prepare(query)
+
     if err != nil {
-        log.Fatalln(err.Error())
+        log.Println(err.Error())
+        return 1
     }
-    defer row.Close()
-    for row.Next() {
-        var ID int
-        row.Scan(&ID)
-        return ID
+    _, err = statement.Exec(email, hash)
+    if err != nil {
+        log.Println(err.Error())
+        return 1
     }
     return 0
 }
 
-func GetEmailsByUrl(db *sql.DB, url int) []string {
+func GetUserStatus(db *sql.DB, email string) int {
+    query := `SELECT status FROM users WHERE email = ?`
+    rows, err := db.Query(query, email)
+    if err != nil {
+        log.Fatalln(err.Error())
+    }
+    defer rows.Close()
+    for rows.Next() {
+        var status int
+        rows.Scan(&status)
+        return status
+    }
+    return 0
+}
+
+func GetUserHash(db *sql.DB, email string) string {
+    query := `SELECT hash FROM users WHERE email = ?`
+    rows, err := db.Query(query, email)
+    if err != nil {
+        log.Fatalln(err.Error())
+    }
+    defer rows.Close()
+    for rows.Next() {
+        var hash string
+        rows.Scan(&hash)
+        return hash
+    }
+    return ""
+}
+
+func UserActivateEmail(db *sql.DB, hash string) {
+    query := `UPDATE users SET status = 1 WHERE hash = ?`
+    statement, err := db.Prepare(query)
+
+    if err != nil {
+        log.Fatalln(err.Error())
+    }
+    _, err = statement.Exec(hash)
+    if err != nil {
+        log.Fatalln(err.Error())
+    }
+}
+
+func GetEmailsByUrl(db *sql.DB, url string) []string {
     var result []string
-    query := `SELECT email FROM subscriptions WHERE id_url = ?`
+    query := `SELECT email FROM subscriptions WHERE url = ?`
     rows, err := db.Query(query, url)
     if err != nil {
         log.Fatalln(err.Error())
@@ -84,14 +131,14 @@ func UpdateUrl(db *sql.DB, url string, newPrice int) {
     }
 }
 
-func AddSubscription(db *sql.DB, email string, urlID int) {
-    query := `INSERT or IGNORE INTO subscriptions(email, id_url) VALUES (?, ?)`
+func AddSubscription(db *sql.DB, email string, url string) {
+    query := `INSERT or IGNORE INTO subscriptions(email, url) VALUES (?, ?)`
     statement, err := db.Prepare(query)
 
     if err != nil {
         log.Fatalln(err.Error())
     }
-    _, err = statement.Exec(email, urlID)
+    _, err = statement.Exec(email, url)
     if err != nil {
         log.Fatalln(err.Error())
     }
@@ -111,6 +158,9 @@ func DbReset() {
 
     urlsTable := migrations.UrlsTableMigration{DB: sqliteDatabase}
     urlsTable.Up()
+
+    usersTable := migrations.UsersTableMigration{DB: sqliteDatabase}
+    usersTable.Up()
 
     subscriptionsTable := migrations.SubscriptionsTableMigration{DB: sqliteDatabase}
     subscriptionsTable.Up()
