@@ -24,3 +24,6 @@ sudo docker build -t pricetracking .
 # Run
 sudo docker run --network="host" pricetracking
 ```
+
+## DB
+[<img src="https://live.staticflickr.com/65535/50482812081_682806a9ef_c.jpg" width=405>](https://live.staticflickr.com/65535/50482812081_682806a9ef_c.jpg)
