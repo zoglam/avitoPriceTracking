@@ -110,11 +110,9 @@ var ipAddress = os.Getenv("IP")
 var portNumber = os.Getenv("PORT")
 
 func main() {
-    args := os.Args[1:]
-    for i := 0; i < len(args); i++ {
-        if args[i] == "--reset" {
-            dbmanager.DbReset()
-        }
+    if _, err := os.Stat("sqlite3.db"); err != nil {
+        log.Println("sqlite3 reset")
+        dbmanager.DbReset()
     }
 
     if ipAddress == "" {
