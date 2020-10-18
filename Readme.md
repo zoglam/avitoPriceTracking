@@ -10,16 +10,16 @@ go get github.com/gorilla/mux
 Parse protection skips on ubuntu 18.04.5 with golang 1.10.4 (net/http package on 1.10.4 allows to parse without banning ip)
 ```bash
 # Default
-go run main.go [params]
-
-# Run with params
-go run main.go --reset
+go run main.go
 ```
 
 ## Docker
 ```bash
-# Build
-sudo docker build -t pricetracking .
+# Build for latest golang
+sudo docker build -f Dockerfile -t pricetracking .
+
+# Build for 1.10.4 golang
+sudo docker build -f Dockerfile_1_10 -t pricetracking .
 
 # Run
 sudo docker run --network="host" pricetracking
