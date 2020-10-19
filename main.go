@@ -51,9 +51,9 @@ func (u *UrlQueue) urlsChecking() {
                     }
                 }
             }
-            time.Sleep(2 * time.Second)
+            time.Sleep(10 * time.Second)
         }
-        time.Sleep(1 * time.Second)
+        time.Sleep(30 * time.Second)
     }
 }
 
@@ -111,7 +111,7 @@ var portNumber = os.Getenv("PORT")
 
 func main() {
     if _, err := os.Stat("sqlite3.db"); err != nil {
-        log.Println("sqlite3 reset")
+        log.Println("sqlite3.db created")
         dbmanager.DbReset()
     }
 

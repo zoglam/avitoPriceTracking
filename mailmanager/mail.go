@@ -3,13 +3,14 @@ package mailmanager
 import (
     "log"
     "net/smtp"
+    "os"
 )
 
-const (
-    from     = "example@domain.com"
-    password = "password"
-    smtpHost = "smtp.host.com"
-    smtpPort = "portNumber"
+var (
+    from     = os.Getenv("FROMEMAIL")
+    password = os.Getenv("PASSWORD")
+    smtpHost = os.Getenv("SMTPHOST")
+    smtpPort = os.Getenv("SMTPPORT")
 )
 
 func SendMessage(body string, emailTo string) {

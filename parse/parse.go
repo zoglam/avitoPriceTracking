@@ -5,6 +5,7 @@ import (
     "io/ioutil"
     "log"
     "net/http"
+    "os"
     "regexp"
     "strconv"
     "time"
@@ -51,7 +52,7 @@ func GetAdsPrice(urlName string) (int, error) {
         // file, _ := os.Create("dwa.html")
         // defer file.Close()
         // file.WriteString(string(responseData))
-        return 0, errors.New("Price not found")
+        return 0, errors.New("- Price not found")
     }
 
     price, err := strconv.Atoi(match[1])

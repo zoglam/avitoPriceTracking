@@ -7,7 +7,7 @@ go get github.com/gorilla/mux
 ```
 
 ## Run
-Parse protection skips on ubuntu 18.04.5 with golang 1.10.4 (net/http package on 1.10.4 allows to parse without banning ip)
+Parse protection skips with golang 1.10.4 (net/http package on 1.10.4 allows to parse without banning ip)
 ```bash
 # Default
 go run main.go
@@ -19,7 +19,7 @@ go run main.go
 sudo docker build -t pricetracking .
 
 # Run
-sudo docker run --network="host" pricetracking
+sudo docker run -it -p 8080:8081 pricetracking
 ```
 
 ## Structure
