@@ -15,11 +15,8 @@ go run main.go
 
 ## Docker
 ```bash
-# Build for latest golang
-sudo docker build -f Dockerfile -t pricetracking .
-
 # Build for 1.10.4 golang
-sudo docker build -f Dockerfile_1_10 -t pricetracking .
+sudo docker build -t pricetracking .
 
 # Run
 sudo docker run --network="host" pricetracking
