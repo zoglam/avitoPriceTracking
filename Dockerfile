@@ -9,8 +9,7 @@ RUN go get -d -v github.com/mattn/go-sqlite3
 
 COPY . .
 
-ENV IP localhost
-ENV PORT 8080
+ENV PORT 8081
 
 RUN go build
 

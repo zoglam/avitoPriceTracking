@@ -116,10 +116,10 @@ func main() {
     }
 
     if ipAddress == "" {
-        ipAddress = "localhost"
+        ipAddress = "95.165.148.222"
     }
     if portNumber == "" {
-        portNumber = "8080"
+        portNumber = "8081"
     }
 
     u := UrlQueue{
@@ -133,5 +133,5 @@ func main() {
     r.HandleFunc("/", handlerInit).Methods("GET")
     r.HandleFunc("/save/", handlerSaveData).Methods("POST")
     r.HandleFunc("/activateemail/", handlerActivateEmail).Methods("GET")
-    log.Fatal(http.ListenAndServe(ipAddress+":"+portNumber, r))
+    log.Fatal(http.ListenAndServe(":"+portNumber, r))
 }
