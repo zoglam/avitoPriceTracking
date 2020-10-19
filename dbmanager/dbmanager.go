@@ -25,7 +25,7 @@ func AddUrl(db *sql.DB, url string, price int) {
 }
 
 func AddUser(db *sql.DB, email string) int {
-    query := `INSERT INTO users(email, hash, status) VALUES (?, ?, 0)`
+    query := `INSERT or IGNORE INTO users(email, hash, status) VALUES (?, ?, 0)`
     hash := fmt.Sprintf("%x", md5.Sum([]byte(email)))
     statement, err := db.Prepare(query)
 
