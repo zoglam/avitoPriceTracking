@@ -1,14 +1,11 @@
-FROM golang:latest
+FROM golang:1.10.4
 
 LABEL maintainer="<https://github.com/zoglam>"
 
 WORKDIR /app
 
-COPY go.mod .
-
-COPY go.sum .
-
-RUN go mod download
+RUN go get -d -v github.com/gorilla/mux
+RUN go get -d -v github.com/mattn/go-sqlite3
 
 COPY . .
 
@@ -17,4 +14,4 @@ ENV PORT 8080
 
 RUN go build
 
-CMD ["./avitopricetracking"]
+CMD ["./app"]

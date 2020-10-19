@@ -8,9 +8,9 @@ import (
     "strconv"
     "time"
 
-    "avitopricetracking/dbmanager"
-    "avitopricetracking/mailmanager"
-    "avitopricetracking/parse"
+    "./dbmanager"
+    "./mailmanager"
+    "./parse"
 
     "github.com/gorilla/mux"
     _ "github.com/mattn/go-sqlite3"

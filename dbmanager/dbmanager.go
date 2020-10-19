@@ -8,7 +8,7 @@ import (
     "os"
     "strconv"
 
-    "avitopricetracking/migrations"
+    "../migrations"
 )
 
 func AddUrl(db *sql.DB, url string, price int) {
